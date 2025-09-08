@@ -14,7 +14,12 @@ We'll want to start with 2025 match data, which is located in [this GitHub repos
 ```{r}
 matches_2025 <- read_csv("https://raw.githubusercontent.com/dwillis/NCAAWomensSoccerData/main/data/ncaa_womens_soccer_matchstats_2025.csv")
 ```
-
+```{r}
+matches_2024 <- read_csv("https://raw.githubusercontent.com/dwillis/NCAAWomensSoccerData/main/data/ncaa_womens_soccer_matchstats_2024.csv")
+```
+```{r}
+matches_2022 <- read_csv("https://raw.githubusercontent.com/dwillis/NCAAWomensSoccerData/main/data/ncaa_womens_soccer_matchstats_2022.csv")
+```
 Let's take a look at this data to see what it contains, using `head` and `glimpse`:
 
 ```{r}
@@ -24,32 +29,70 @@ glimpse(matches_2025)
 
 Now, onto the questions using aggregates, which means `group_by` and `summarize`:
 
-1. How many shots in total has Maryland attempted and how many have been on goal? Calculate a percentage of shots on goal.
+1. How many shots in total has Maryland attempted and how many have been on goal? Calculate a percentage of shots on goal. 
+#Maryland has a 54% shot on goal rate
 
 ```{r}
-
+terrapins_goals <- matches_2025 |>
+  group_by(team) |>
+  summarise(
+    total_shots = sum(sh_att),
+    shots_on_goal = sum(so_g),
+    percentage_on_goal = (shots_on_goal / total_shots) * 100
+  )
 ```
 
 2. What about the same shot stats from last season's first four games? You'll need to load the matches from 2024 - just change the season in the URL - and filter by date to find the first four games.
 
 ```{r}
+terps_2024 <- matches_2024 |>
+  filter(team == "Maryland Terrapins, Terps")
+```
 
+```{r}
+terps_shotsongoal_2024 <- matches_2024 |>
+  filter(team == "Maryland Terrapins, Terps",
+         date >= "2024-08-15",
+         date <= "2024-08-25") |>
+  summarise(
+    shots_tot = sum(sh_att),
+    shots_on_goal = sum(so_g),
+    goal_percentage = (shots_on_goal / shots_tot) * 100
+  )
+```
 ```
 
 
 3. Maryland started 2022 with 4 draws. Have any other teams had as many this season?
 
 ```{r}
-
+draws_2025 <- matches_2025 |> 
+  filter(date >= as.Date("2025-01-01")) |> 
+  group_by(team) |> 
+  summarise(draws = sum(outcome == "Draw", na.rm = TRUE), .groups = "drop")
 ```
 
+```{r}
+draws_2025_desc <- draws_2025 |> arrange(desc(draws))
+View(draws_2025_desc)
+```
 
 4. How many total corner kicks has Maryland had so far this season and how many have its opponents have? Calculate the difference between the two totals for every team using group_by, summarize and mutate, then filter to find Maryland's totals.
 
 ```{r}
-
-
+corner_kicks_ <- matches_2025 |> 
+  group_by(team) |> 
+  summarise(
+    total_team_corners = sum(corners, na.rm = TRUE),
+    total_opponent_corners = sum(defensive_corners, na.rm = TRUE),
+    .groups = "drop"
+  ) |> 
+  mutate(
+    corner_ratio = total_team_corners / total_opponent_corners
+  ) |> 
+  arrange(desc(corner_ratio)) 
+View(corner_kicks_)
 ```
 
 5. What's the most interesting thing you've seen from these questions?
-
+# I think the most interesting thing I found is that Maryland has one of the worst corner ratios in the country. That is clearly a sign of some of the top teams, and I think that using that data, especially from the previous years is very interesting.
