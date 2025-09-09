@@ -139,7 +139,7 @@ players |>
 ```
 
 **ANSWER** Who do you get as the first result, and what was his trueshooting percentage?
-
+#Julian Reese and his true shooting percent is 0.599%
 
 So is 100 minutes our level? Here's the truth -- there's not really an answer here. We're picking a cutoff. If you can cite a reason for it and defend it, then it probably works.
 
@@ -157,7 +157,7 @@ That's all there is to it. Just remember -- for it to work correctly, you need t
 
 ## Back to soccer
 
-Let's return to our women's soccer data. I've updated the data through Sept. 4, so we've got more matches now. Let's load it:
+Let's return to our women's soccer data. I've updated the data through Sept. 7, so we've got more matches now. Let's load it:
 
 ```{r}
 matches_2025 <- read_csv("https://raw.githubusercontent.com/dwillis/NCAAWomensSoccerData/main/data/ncaa_womens_soccer_matchstats_2025.csv")
@@ -175,10 +175,19 @@ matches_2025 |>
     percent = (total_on_goal/total_attempts)*100
   )
 ```
-Now it's your turn: do the same for the 2024 data. Load it from GitHub, then adapt the above code but add an additional filter to restrict the results to Maryland's first six games (the 6th game was on Sept. 1, 2024). You need to put the date value in quotes in this format: 'yyyy-mm-dd'
+Now it's your turn: do the same for the 2024 data. Load it from GitHub, then adapt the above code but add an additional filter to restrict the results to Maryland's first seven games (the 7th game was on Sept. 5, 2024). You need to put the date value in quotes in this format: 'yyyy-mm-dd'
 
 ```{r}
-
+matches_2024 |>
+  filter(team == "Maryland Terrapins, Terps",
+         date <= "2024-09-05") |>
+  group_by(team) |>
+  summarise(
+    total_attempts = sum(sh_att, na.rm = TRUE),
+    total_on_goal = sum(so_g, na.rm = TRUE),
+    percent = (total_on_goal / total_attempts) * 100
+  )
 ```
 
 **ANSWER** How do the two years compare?
+#Maryland's shooting almost 10% better this year than they did in 2024.
