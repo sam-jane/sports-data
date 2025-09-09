@@ -51,7 +51,7 @@ head(attendance)
 
 What's one thing you notice about the data that might make year-over-year comparisons more complex?
 
-**Answer** DESCRIBE IT HERE
+**Answer** There's plenty of NA's from when teams changed conferences
 
 The code to calculate percent change is pretty simple. Remember, with `summarize`, we used `n()` to count things. With `mutate`, we use very similar syntax to calculate a new value using other values in our dataset. So in this case, we're trying to do (new-old)/old, but we're doing it with fields. If we look at what we got when we did `head`, you'll see there's \`2024\` as the new data, and we'll use \`2023\` as the old data. So we're looking at one year. Then, to help us, we'll use arrange again to sort it, so we get the fastest growing school over one year.
 
@@ -77,7 +77,7 @@ attendance |> mutate(
 
 Who had the most growth in 2024 compared to the year before? What could account for that change? And what team(s) are the most interesting here?
 
-**Answer** YOUR ANSWER HERE
+**Answer** SMU had the biggest change. They went from a mediocre team to making the playoffs. I think Ohio State is a very interesting answer because they're usually really good, so I don't fully understand why there attendance would've jumped up that much. 
 
 ## Back to women's soccer
 
@@ -89,19 +89,18 @@ Import it like this:
 matches_2025 <- read_csv("https://raw.githubusercontent.com/dwillis/NCAAWomensSoccerData/main/data/ncaa_womens_soccer_matchstats_2025.csv")
 ```
 
-Previously we calculated totals for shots attempted and shots on goal for each time. Now let's do shots on goal and goals, using group_by() and summarize(), and then we'll use mutate to add a percentage to that and see what stands out.
 
 ```{r}
 matches_2025 |> 
-  group_by(REPLACE WITH GROUP_BY) |> 
+  group_by(team) |> 
   summarise(
-    total_on_goal = REPLACE WITH FORMULA,
-    total_goals = REPLACE WITH FORMULA
+    total_on_goal = sum(so_g),
+    total_goals = sum(goals),
   ) |> 
-  mutate(percent = REPLACE WITH FORMULA) |> 
+  mutate(percent = (total_goals / total_on_goal) * 100) |> 
   arrange(desc(percent))
 ```
 
 What stands out to you here? Describe that below. Would you narrow down the results to certain teams based on the data? If so, do that in the code and explain why you did it below. Finally, what's the most interesting result to you that could be a story?
 
-**Answer** YOUR ANSWER HERE
+**Answer** I would narrow it down to Big Ten teams and then filter it to see how often the most goals line up with the top shooting percentages. Are the most effective shooting teams the one with the highest output?
