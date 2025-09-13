@@ -1,0 +1,37 @@
+```{r}
+library(tidyverse)
+```
+
+```{r}
+soccer <- read_csv("https://dwillis.github.io/sports-data-files/ncaa_womens_soccer_totals_2024.csv")
+```
+```{r}
+soccer |>
+  mutate(SoGPct = (SoG/ShAtt)*100
+) |>
+  arrange(desc(SoGPct))
+```
+```{r}
+terrapins_goals <- soccer |>
+  group_by(school_name) |>
+  summarise(
+    total_shots = sum(ShAtt),
+    shots_on_goal = sum(SoG),
+    percentage_on_goal = (shots_on_goal / total_shots) * 100
+  )
+```
+
+```{r}
+conference_penalties <- soccer |>
+  group_by(conference_name) |>
+  summarise(total_fouls = sum(fouls, na.rm = TRUE)) |>
+  arrange(desc(total_fouls))
+```
+
+```{r}
+conference_goalsallowed <- soccer |>
+  group_by(conference_name) |>
+  summarise(total_goals = sum(goalie_ga, na.rm = TRUE)) |>
+  arrange(desc(total_goals))
+```
+##I wanted to look at if penalties are extremely consequential to a team allowing goals, so I took the conferences penalties committed to their goals allowed and then compared the two. For the most part, it does not seem like there is a strong correlation between teams committing penalties and giving up a lot of goals. The Big Ten is at the top of allowed goals, while not at the top for penalties whereas the SEC committs a ton of penalties but is actually near the bottom of Power Four conferences in surrendered goals. 
