@@ -60,10 +60,10 @@ terps_shotsongoal_2024 <- matches_2024 |>
     goal_percentage = (shots_on_goal / shots_tot) * 100
   )
 ```
-```
 
 
-3. Maryland started 2022 with 4 draws. Have any other teams had as many this season?
+
+###3. Maryland started 2022 with 4 draws. Have any other teams had as many this season?
 
 ```{r}
 draws_2025 <- matches_2025 |> 
@@ -94,5 +94,56 @@ corner_kicks_ <- matches_2025 |>
 View(corner_kicks_)
 ```
 
-5. What's the most interesting thing you've seen from these questions?
+###5. What's the most interesting thing you've seen from these questions?
 # I think the most interesting thing I found is that Maryland has one of the worst corner ratios in the country. That is clearly a sign of some of the top teams, and I think that using that data, especially from the previous years is very interesting.
+
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+correlations <- read_csv("https://raw.githubusercontent.com/dwillis/NCAAWomensSoccerData/main/data/ncaa_womens_soccer_matchstats_2025.csv")
+```
+```{r}
+newcorrelations <- correlations |> 
+  mutate(
+    differential = goals - defensive_goals
+    
+    )
+
+newcorrelations <- newcorrelations |>
+mutate(homeaway = case_when(
+  grepl("Away", home_away) ~ 0,
+  grepl("Home", home_away) ~ 1
+  ),
+  corners = as.numeric(defensive_corners),
+    goals = as.numeric(goals)
+)
+
+terps25 <- newcorrelations |>
+  filter(team == "Maryland Terrapins, Terps")
+
+finalcorrelations <- newcorrelations |> 
+  mutate(
+    corner_kicks = as.numeric(defensive_corners),
+    goals = as.numeric(goals)
+  )
+
+finalcorrelations |> 
+  summarise(correlation = cor(corner_kicks, goals, method = "pearson"))
+```
+
+```{r}
+newcorrelations |> summarise(correlation = cor(differential, fouls, method="pearson"))
+```
+```{r}
+newcorrelations |> 
+  summarise(correlation = cor(differential, so_g, method="pearson"))
+```
+
+```{r}
+net <- lm(differential ~ so_g, data = newcorrelations)
+summary(net)
+```
+### There's not much of a linkage between allowing corner shots and goals allowed. While the perception of the scoring opportunities and corners are correlated between each other, there is a statistically insignificant tie between the plays. 
