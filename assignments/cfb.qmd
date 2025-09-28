@@ -1,0 +1,44 @@
+```{r}
+library(tidyverse)
+```
+```{r}
+logs <- read_csv("https://dwillis.github.io/sports-data-files/footballlogs1124.csv")
+glimpse(logs)
+```
+```{r}
+logs <- logs |>
+  mutate(point_differential = TeamScore - OpponentScore)
+logs |>
+  summarise(correlation = cor(point_differential, Penalties, method = "pearson"))
+model_simple <- lm(point_differential ~ PenaltyYds, data = logs)
+summary(model_simple)
+```
+##It gave me a P-value of -0.019. That means that as penalties increase, the point differential tends to decrease (teams with more penalties score slightly fewer points relative to their opponent). The R-squared value is under 0.03, which means penalty yards explain only about 0.03 % of the variation in score differential — effectively none. That means penalty yards are essentially useless for predicting who wins or by how much in this dataset.
+```{r}
+logs |>
+  select(point_differential, Penalties, PenaltyYds, Fumbles, Interceptions) |>
+  cor(method = "pearson", use = "complete.obs")
+```
+```{r}
+model_multi <- lm(point_differential ~ Penalties + PenaltyYds + Fumbles + Interceptions,
+                  data = logs)
+summary(model_multi)
+```
+###I built a multiple regression model predicting point differential using Penalties, PenaltyYds, Fumbles, and Interceptions. All predictors were statistically significant, but there is a risk of multicollinearity, especially between penalties and penalty yards, because thy are related, penalty yards has a small positive coefficient despite being a negative play, likely due to its correlation with penalties.
+```{r}
+close_games <- logs |>
+  filter(abs(point_differential) <= 7)
+```
+
+```{r}
+model_simple_close <- lm(point_differential ~ PenaltyYds, data = close_games)
+summary(model_simple_close)
+```
+
+
+```{r}
+model_multi_close <- lm(point_differential ~ Penalties + PenaltyYds + Fumbles + Interceptions,
+                        data = close_games)
+summary(model_multi_close)
+```
+###I think the multiple model is better because the r-squared and the correlation seems to be more accurate than when we used the simple model.
