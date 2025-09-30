@@ -147,3 +147,48 @@ net <- lm(differential ~ so_g, data = newcorrelations)
 summary(net)
 ```
 ### There's not much of a linkage between allowing corner shots and goals allowed. While the perception of the scoring opportunities and corners are correlated between each other, there is a statistically insignificant tie between the plays. 
+
+
+
+##Residuals
+```{r}
+matches_2025 <- matches_2025 |>
+  mutate(differential = team_score - opponent_score)
+```
+
+```{r}
+fit <- lm(differential ~ goals + defensive_fouls + defensive_yellow_cards,
+           data = matches_2025)
+summary(fit)
+```
+##2
+```{r}
+matches_2025 <- matches_2025 |>
+  mutate(
+    predicted = predict(fit, newdata = matches_2025),
+    residuals = residuals(fit)
+  )
+```
+
+##3
+```{r}
+matches_2025 |>
+  arrange(desc(residuals)) |>
+  slice_head(n = 10) |>
+  select(team, opponent, differential, predicted, residuals)
+```
+
+```{r}
+matches_2025 |>
+  arrange(residuals) |>
+  slice_head(n = 10) |>
+  select(team, opponent, differential, predicted, residuals)
+```
+###I noticed a lot of these outlier games in the negative came from low-level teams that are not Division one or power five and lost to top teams. The model clearly predicted not wide enough of gaps for some of these games, probably assuming that soccer wasn't going to have a eight or nine goal margin lol. On the other hand, the positive models where teams overperformed was between lower level teams who tied with higher level teams
+```{r}
+matches_2025 |>
+  filter(team == "Maryland Terrapins, Terps") |>
+  arrange(residuals) |>
+  select(date, opponent, differential, predicted, residuals)
+```
+###Maryland has tended to overperform this season, outprojecting their model eight times this season compared to the four times they underperformed. Their biggest overprojection came against UMBC, when they were projected to lose by just under a goal and won by one. Their worst projection came agianst Penn State when they were blown out. It would be very interesting to look at 2024 and see how many times they underperformed the model in such a bad season. That could do some justice to the claim that while the record is not substantially improving, the program is getting better. That's a story I would want to pursue the most moving forward.
