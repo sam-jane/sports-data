@@ -1,0 +1,40 @@
+```{r}
+library(tidyverse)
+```
+```{r}
+wbb_stats <- read_csv("https://dwillis.github.io/sports-data-files/wbbstats1525.csv")
+```
+```{r}
+wbb_pergame <- wbb_stats |>   
+  mutate(
+    points_pg    = ForPoints / Games,       
+    rebounds_pg  = TotalRebounds / Games,    
+    assists_pg   = Assists / Games,      
+    steals_pg    = Steals / Games  
+  ) |>
+  select(Season, School,
+         points_pg, rebounds_pg, assists_pg, steals_pg)
+```
+
+```{r}
+wbb_zscores <- wbb_pergame |>
+  group_by(Season) |>
+  mutate(
+    z_points   = (points_pg   - mean(points_pg,   na.rm = TRUE)) / sd(points_pg,   na.rm = TRUE),
+    z_rebounds = (rebounds_pg - mean(rebounds_pg, na.rm = TRUE)) / sd(rebounds_pg, na.rm = TRUE),
+    z_assists  = (assists_pg  - mean(assists_pg,  na.rm = TRUE)) / sd(assists_pg,  na.rm = TRUE),
+    z_steals   = (steals_pg   - mean(steals_pg,   na.rm = TRUE)) / sd(steals_pg,   na.rm = TRUE),
+    composite_z = (z_points + z_rebounds + z_assists + z_steals) / 4
+  ) |>
+  ungroup() |>
+  arrange(desc(composite_z))
+```
+
+```{r}
+maryland_zscore <- wbb_zscores |>
+  filter(School == "Maryland") |>
+  arrange(desc(composite_z))
+```
+
+
+##I think the best story idea is why the hell is Sacramento State so high up haha. Just kidding, I think looking at the analysis of how dynasties have shifted across the past decade would be a particualrly interesting look, especially considering the sport of WBB. Sorry this is late, with it being Yom Kippur, I went home for the weekend, so didn't get a chace to do this.
