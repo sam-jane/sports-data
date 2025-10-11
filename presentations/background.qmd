@@ -1,0 +1,7 @@
+###I picked the question of if the number of freshman Maryland football's playing is unique across the country. 
+
+##1. The data for snap counts exists on Pro Football Focus. I need to figure out how to convert it into a data frame though, as I think I can download it as a csv file. 
+###2. Just help on figuring out how to download it into a convertable csv file. 
+###3. I want the data from the year of 2025, and maybe spanning back a decade for just Maryland.
+###4. I might have to mutate a year column and then cross-refernece it with each specific team's roster to see if we could include each players year on the data set.
+###5. Yes, there's a few articles that I found about team's playing freshman, but that seemed to be more of a team-specific focused article, rather than across the conference or the country.
