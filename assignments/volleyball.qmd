@@ -77,7 +77,7 @@ Let's visualize these differences:
 ```{r}
 # Create comparison data
 comparison_data <- bind_rows(
-  team_totals |> mutate(group = "All D-I Teams"),
+  team_totals |> mutate(group = "All D-1 Teams"),
   big10_totals |> mutate(group = "Big Ten")
 )
 
