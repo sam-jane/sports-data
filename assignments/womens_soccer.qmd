@@ -21,6 +21,42 @@ matches_2024 <- read_csv("https://raw.githubusercontent.com/dwillis/NCAAWomensSo
 ```{r}
 matches_2022 <- read_csv("https://raw.githubusercontent.com/dwillis/NCAAWomensSoccerData/main/data/ncaa_womens_soccer_matchstats_2022.csv")
 ```
+```{r}
+matches_2024 <- matches_2024 %>%
+  mutate(total_goals = goals + defensive_goals)
+
+matches_2025 <- matches_2025 %>%
+  mutate(total_goals = goals + defensive_goals)
+```
+
+```{r}
+combined <- bind_rows(
+  matches_2024 %>% mutate(year = 2024),
+  matches_2025 %>% mutate(year = 2025)
+)
+
+ttest_all <- t.test(total_goals ~ year, data = combined)
+ttest_all
+```
+```{r}
+umd_2024 <- matches_2024 %>% 
+  filter(team == "Maryland")
+
+umd_2025 <- matches_2025 %>% 
+  filter(team == "Maryland")
+
+umd_combined <- bind_rows(
+  umd_2024 %>% mutate(year = 2024),
+  umd_2025 %>% mutate(year = 2025)
+)
+
+ttest_umd <- t.test(total_goals ~ year, data = umd_combined)
+ttest_umd
+
+```
+
+
+
 Let's take a look at this data to see what it contains, using `head` and `glimpse`:
 
 ```{r}
